@@ -13,6 +13,8 @@ if __name__ == '__main__':
 
 	if args.server == 'development':
 		from kollektions import app
+		app.config['DEBUG'] = True
+		app.config['SECRET_KEY'] = '0913547b7f5db1c55094f5238d666c4d'
 		app.run(host='0.0.0.0', debug=True)
 
 	elif args.server == 'gevent':
