@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block customhead %}        
+<style type="text/css">
+.index-left {
+	background-color:rgba(255,128,255,0.9);
+}
+.index-middle {
+	background-color:rgba(255,255,128,0.9);
+}
+.index-right {
+	background-color:rgba(128,255,255,0.9);
+}
+
+</style>
+{% endblock %}
+
+
+{% block main %}
+
+<div class="row">
+
+	<div class="span12">
+		<div class="content index-left">
+			<h3>Login</h3>
+		</div>
+
+		<div class="content">
+			<form method=post>
+				<label>Username or E-Mail</label>
+				<input type="text" class="span3" placeholder="username">
+
+				<label>Password</label>
+				<input type="password" class="span3" placeholder="password">
+				<br>
+				<button type="submit" class="btn">Login</button>
+				<br><br>
+				<a href="#">Forgot your password?</a>
+			</form>
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}
