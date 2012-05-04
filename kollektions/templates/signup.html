@@ -12,38 +12,42 @@
 <div class="row">
 	<div class="span12">
 		<div class="content index-left">
-			<h3>Login</h3>
+			<h3>Signup</h3>
 		</div>
 		<div class="content">
-			<form class="form-vertical" method="POST" action="{{ url_for('login') }}">
+			<form class="form-vertical" method="POST" action="{{ url_for('signup') }}">
 				{{ form.csrf }}
-				{{ form.login.label }}
-				
-				{% if form.login.errors %}
-					{% for error in form.login.errors %}
+
+				{{ form.email.label }}
+				{% if form.email.errors %}
+					{% for error in form.email.errors %}
 						<span class="formfield-error">{{ error }}</span><br>
 					{% endfor %}
-					{{ form.login.error }}
+					{{ form.email.error }}
 				{% endif %}
+				{{ form.email(size=20) }}
 
-				{{ form.login(size=20) }}
+				{{ form.username.label }}
+				{% if form.username.errors %}
+					{% for error in form.username.errors %}
+						<span class="formfield-error">{{ error }}</span><br>
+					{% endfor %}
+					{{ form.username.error }}
+				{% endif %}
+				{{ form.username(size=20) }}
 
 				{{ form.password.label }}
-
 				{% if form.password.errors %}
 					{% for error in form.password.errors %}
 						<span class="formfield-error">{{ error }}</span><br>
 					{% endfor %}
 					{{ form.password.error }}
 				{% endif %}
-
 				{{ form.password(size=20) }}
 
 				<br>
-				<button type="submit" class="btn">Login</button>
+				<button type="submit" class="btn">Create Account and Login</button>
 
-				<br><br>
-				<a href="#">Forgot your password?</a>
 			</form>
 		</div>
 	</div>
