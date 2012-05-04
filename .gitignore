@@ -1,1 +1,6 @@
-*NOTES
+kollektions.egg-info
+build/*
+dist/*
+*pyc
+*NOTES.md
+
