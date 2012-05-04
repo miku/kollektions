@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block customhead %}        
+	<style type="text/css">
+		.index-left {
+			background-color:rgba(255,128,255,0.9);
+		}
+		.index-middle {
+			background-color:rgba(255,255,128,0.9);
+		}
+		.index-right {
+			background-color:rgba(128,255,255,0.9);
+		}
+    .stretch-100 {
+      padding: 0 0 100px 0;
+    }
+
+	</style>
+{% endblock %}
+
+
+{% block main %}
+
+<div class="row">
+      <div class="span4">
+		<div class="content index-left">
+      		<h3>For Worms and Lovers</h3>
+      	</div>
+
+      	<div class="content">
+      		<p>Build your personal book collection. Share with friends. Discover what your
+      			friends have read.
+      		</p>
+      	</div>
+      </div>
+
+      <div class="span4">
+      	<div class="content index-middle">
+      		<h3>For Classes</h3>
+      	</div>
+      	<div class="content">
+      		<p>Share book collections for classes. Just add a class and invite your fellow students.</p>
+      	</div>
+      </div>
+
+      <div class="span4">
+      	<div class="content index-right">
+      		<h3>For Small Libraries</h3>
+      	</div>
+      	<div class="content">
+      		<p>Put your collections online and let others discover your treasures.</p>
+
+      	</div>
+      </div>
+
+</div>
+
+{% endblock %}
