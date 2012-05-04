@@ -46,26 +46,12 @@
 
     html, body { height: 100%; }
 
-    .footer {
-        border-top: 1px solid #FFF;
-        background-color:rgba(255,255,255,0.9);
+    footer > .container {
+        border-top: solid 1px #FFF;
     }
-    .wrapper {
-        min-height: 100%;
-        /*height: auto !important;*/
-        height: 100%;
-        margin: 0 auto -38px;
-    }
-    .push {
-        height: 38px;
-    }
-
-    footer p {
-        margin:0;
-    }
-
-    .max-height {
-        height: 100%;
+    .reset {
+        margin: 0;
+        padding: 0;
     }
 
     </style>
@@ -76,15 +62,13 @@
 
     {% block body %}
     
-    <div class="wrapper">
-
         <div class="container h100">
 
             <div class="row">
                 <div class="span12">                
                     <div class="header">
                         {% block header %}
-                        <span class="appname">Kollektions</span>
+                        <span class="appname"><a href="/">Kollektions</a></span>
                         <span class="login-signup">
                             <span class="login"><a href="#">Login</a></span> or
                             <span class="signup"><a href="#">Sign up</a></span>
@@ -105,20 +89,14 @@
                 </div>
             </div>
         </div>
-        <div class="push"><!--//--></div>
-    </div>
 
     <footer>
       <div class="container">
         <div class="content">
-            <p>2012 Kollektions | Background Image by <a href="http://www.flickr.com/photos/laurenmanning/4286475665">Lauren Manning</a> &middot; <a href="http://creativecommons.org/licenses/by/2.0/deed.en">CC-BY</a></p>
+            <p class="reset">2012 Kollektions | We love books and open data &#x2665; | Background photo by <a href="http://www.flickr.com/photos/laurenmanning/4286475665">Lauren Manning</a> &middot; <a href="http://creativecommons.org/licenses/by/2.0/deed.en">CC-BY</a></p>
         </div>
       </div>
     </footer>
-
-
-  
-
 
   {% endblock %}
 
