@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
 	if args.server == 'development':
 		from kollektions import app
-		app.run(debug=True)
+		app.run(host='0.0.0.0', debug=True)
 
 	elif args.server == 'gevent':
 		from gevent.wsgi import WSGIServer
