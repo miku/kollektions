@@ -77,8 +77,12 @@
                         {% block header %}
                         <span class="appname"><a href="/">Kollektions</a></span>
                         <span class="login-signup">
-                            <span class="login"><a href="{{ url_for('login') }}">Login</a></span> or
-                            <span class="signup"><a href="{{ url_for('signup') }}">Sign up</a></span>
+                            {% if session.user %}
+                                {{ session.user.username }} | <span class="login"><a href="{{ url_for('logout') }}">Logout</a></span>
+                            {% else %}
+                                <span class="login"><a href="{{ url_for('login') }}">Login</a></span> or
+                                <span class="signup"><a href="{{ url_for('signup') }}">Sign up</a></span>                            
+                            {% endif %}
                         </span>
                         <div class="clear"></div>
                         {% endblock %}
