@@ -32,5 +32,8 @@ if __name__ == '__main__':
         from gevent.wsgi import WSGIServer
         from kollektions import app
 
+        app.config['DEBUG'] = True
+        app.config['SECRET_KEY'] = '0913547b7f5db1c55094f5238d666c4d'
+
         http_server = WSGIServer(('', 5000), app)
         http_server.serve_forever()
