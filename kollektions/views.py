@@ -3,7 +3,7 @@
 
 from kollektions import app
 from kollektions.forms import LoginForm, SignupForm
-from kollektions.store import get_store, get_user
+from kollektions.store import get_store, get_user_by_username_or_email
 from kollektions.utils import calculate_sha1
 from flask import render_template, flash, redirect, url_for, session
 import pyes
@@ -25,7 +25,7 @@ def index():
 def login():
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
-        session['user'] = get_user(form.data['login'])
+        session['user'] = get_user_by_username_or_email(form.data['login'])
         return redirect(url_for("index"))    
     return render_template('login.html', form=form)
 

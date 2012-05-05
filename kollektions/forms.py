@@ -3,7 +3,7 @@
 from flaskext.wtf import Form, TextField, PasswordField
 from flaskext.wtf import Required, Email, ValidationError
 import pyes
-from kollektions.store import get_user, get_user_by_email, get_user_by_username
+from kollektions.store import get_user_by_username_or_email, get_user_by_email, get_user_by_username
 from kollektions.utils import calculate_sha1
 
 class LoginSuccessful(object):
@@ -11,7 +11,7 @@ class LoginSuccessful(object):
         self.message = message
 
     def __call__(self, form, field):
-        user = get_user(form.data['login'])
+        user = get_user_by_username_or_email(form.data['login'])
         if user == None:
             raise ValidationError(self.message)
         if not user['password'] == calculate_sha1(form.data['password']):
