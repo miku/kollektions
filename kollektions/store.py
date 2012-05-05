@@ -15,19 +15,42 @@ def get_store():
         __user_db = couch.create(DB_NAME)
         return __user_db
 
-def get_user(username_or_email):
+def get_user_by_email(email):
+    user = None
     conn = pyes.ES('127.0.0.1:9200')
-    
+
+    q = pyes.query.FieldQuery(pyes.query.FieldParameter("email", email))
+    resultset = conn.search(query=q, indices='kollektions')
+    if len(resultset['hits']['hits']) == 1:
+        user = resultset['hits']['hits'][0]['_source']
+
+    return user
+
+def get_user_by_username(username):
+    user = None
+    conn = pyes.ES('127.0.0.1:9200')
+
+    q = pyes.query.FieldQuery(pyes.query.FieldParameter("username", username))
+    resultset = conn.search(query=q, indices='kollektions')
+    if len(resultset['hits']['hits']) == 1:
+        user = resultset['hits']['hits'][0]['_source']
+
+    return user
+
+def get_user(username_or_email):
+    user = None
+    conn = pyes.ES('127.0.0.1:9200')
+
     q = pyes.query.FieldQuery(pyes.query.FieldParameter("username", username_or_email))
     resultset = conn.search(query=q, indices='kollektions')
+    if len(resultset['hits']['hits']) == 1:
+        user = resultset['hits']['hits'][0]['_source']
 
     # try email, too
-    if len(resultset['hits']['hits']) == 0:
+    if user == None:
         q = pyes.query.FieldQuery(pyes.query.FieldParameter("email", username_or_email))
         resultset = conn.search(query=q, indices='kollektions')
         if len(resultset['hits']['hits']) == 1:
-            return resultset['hits']['hits'][0]['_source']
-    elif len(resultset['hits']['hits']) == 1:
-        return resultset['hits']['hits'][0]['_source']
+            user = resultset['hits']['hits'][0]['_source']
 
-    return None
+    return user

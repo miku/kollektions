@@ -4,8 +4,8 @@
 from kollektions import app
 from kollektions.forms import LoginForm, SignupForm
 from kollektions.store import get_store, get_user
+from kollektions.utils import calculate_sha1
 from flask import render_template, flash, redirect, url_for, session
-import hashlib
 import pyes
 
 @app.route('/')
@@ -35,11 +35,13 @@ def signup():
         __pw = form.data['password']
 
         store = get_store()
-        store.save({
+        doc_id, doc_rev = store.save({
             'type' : 'user', 
             'email' : __email,
             'username' : __username,
             'password' : calculate_sha1(__pw)})
+
+        session['user'] = store[doc_id]
 
         return redirect(url_for("index"))    
     return render_template('signup.html', form=form)
