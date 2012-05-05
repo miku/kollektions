@@ -45,3 +45,9 @@ def signup():
 
         return redirect(url_for("index"))    
     return render_template('signup.html', form=form)
+
+@app.route('/users/<doc_id>')
+def home(doc_id):
+    store = get_store()
+    user = store[doc_id]
+    return render_template('home.html', user=user)

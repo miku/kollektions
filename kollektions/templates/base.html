@@ -78,7 +78,7 @@
                         <span class="appname"><a href="/">Kollektions</a></span>
                         <span class="login-signup">
                             {% if session.user %}
-                                {{ session.user.username }} | <span class="login"><a href="{{ url_for('logout') }}">Logout</a></span>
+                                <span class="username"><a href="{{ url_for('home', doc_id=session.user._id) }}">{{ session.user.username }}</a></span> | <span class="login"><a href="{{ url_for('logout') }}">Logout</a></span>
                             {% else %}
                                 <span class="login"><a href="{{ url_for('login') }}">Login</a></span> or
                                 <span class="signup"><a href="{{ url_for('signup') }}">Sign up</a></span>                            
