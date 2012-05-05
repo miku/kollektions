@@ -1,3 +1,4 @@
+CouchDB==0.8
 Flask==0.8
 Flask-WTF==0.6
 Jinja2==2.6
@@ -5,5 +6,5 @@ WTForms==1.0.1
 Werkzeug==0.8.3
 gevent==0.13.7
 greenlet==0.3.4
-kollektions==0.0.1
+pyes==0.16.0
 wsgiref==0.1.2
