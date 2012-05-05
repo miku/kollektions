@@ -7,6 +7,15 @@ from kollektions.store import get_store, get_user
 from kollektions.utils import calculate_sha1
 from flask import render_template, flash, redirect, url_for, session
 import pyes
+from functools import wraps
+
+def login_required(fn):
+	@wraps(fn)
+	def decorated_view(*args, **kwargs):
+	    if not 'user' in session:
+	        return redirect(url_for("login"))
+	    return fn(*args, **kwargs)
+	return decorated_view
 
 @app.route('/')
 def index():
@@ -47,6 +56,7 @@ def signup():
     return render_template('signup.html', form=form)
 
 @app.route('/users/<doc_id>')
+@login_required
 def home(doc_id):
     store = get_store()
     user = store[doc_id]
