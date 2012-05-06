@@ -5,7 +5,8 @@ from kollektions import app, db, User, Event, Following
 from kollektions.forms import LoginForm, SignupForm
 from kollektions.store import get_store
 from kollektions.utils import pretty_date
-from flask import render_template, flash, redirect, url_for, session, abort, request, jsonify
+from flask import render_template, flash, redirect, url_for, session
+from flask import abort, request, jsonify
 from functools import wraps
 from sqlalchemy import or_, and_
 from sqlalchemy.exc import IntegrityError
@@ -14,24 +15,31 @@ import couchdb
 import time
 import datetime
 import urllib2
+import pyelasticsearch
+
 try:
     import simplejson as json
 except ImportError:
     import json
-import pyelasticsearch
+
 
 def get_book(id, bibkey = "ISBN"):
-    '''Get a Book by its ID: ISBN (default), LCCN, OCLC
+    """Get a Book by its ID: ISBN (default), LCCN, OCLC
     or OLID (Open Library ID).
     
     Returns:
         A pyobj.
-    '''
-    url = urllib2.urlopen("http://openlibrary.org/api/books?bibkeys=%s:%s&jscmd=data&format=json" % (bibkey, id))
+    """
+    base = "http://openlibrary.org/api/books"
+    url = urllib2.urlopen("%s?bibkeys=%s:%s&jscmd=data&format=json" % (
+        base, bibkey, id))
     data = json.load(url)['%s:%s' % (bibkey, id)]
     return data
 
 def login_required(fn):
+    """
+    login required as decorator
+    """
     @wraps(fn)
     def decorated_view(*args, **kwargs):
         if not 'user' in session or session['user'] == None:
@@ -49,23 +57,39 @@ def page_not_found(e):
 
 @app.route('/')
 def index():
+    """
+    Welcome page.
+    """
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Login view, the form will check the credentials itself.
+    User is stored in the session.
+    """
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
-        session['user'] = User.query.filter(or_(User.username==form.data['login'], User.email==form.data['login'])).first()
+        session['user'] = User.query.filter(or_(
+            User.username==form.data['login'], 
+            User.email==form.data['login'])).first()
         return redirect(url_for("home", id=session['user'].id))    
     return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():
+    """
+    Pop the user.
+    """
     session.pop('user', None)
     return redirect(url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    """
+    Singup view. Automatically log the user in. No account verification
+    at this time.
+    """
     form = SignupForm(csrf_enabled=False)
     if form.validate_on_submit():
 
@@ -73,7 +97,7 @@ def signup():
         __username = form.data['username']
         __pw = form.data['password']
 
-        # craete User
+        # create User
         __user = User(username=__username, email=__email, password=__pw)
         db.session.add(__user)
         db.session.commit()
@@ -91,19 +115,22 @@ def signup():
 
 @app.route('/users/<int:id>/')
 def home(id):
+    """
+    The users home/profile view.
+    Displays a newsfeed of the user and the followed users.
+
+    """
     user = User.query.get(id)
     if user == None:
         return abort(404)
-    # if not session['user'].id == user.id:
-    #     return abort(403)
 
-    # __events = Event.query.filter(Event.user_id==user.id).order_by('-time')
     followed = Following.query.filter(Following.user_id==user.id).all()
+    # concat all relevant user ids
     event_user_ids = [ f.following_user_id for f in followed ] + [user.id]
-    __events = Event.query.filter(Event.user_id.in_(event_user_ids)).order_by('-time')
+    __events = Event.query.filter(
+        Event.user_id.in_(event_user_ids)).order_by('-time')
 
     events = []
-
     event_map = {
         'book added' : 'added',
         'book deleted' : 'removed'
@@ -117,13 +144,12 @@ def home(id):
                 'username' : User.query.get(event.user_id).username,
                 'title' : event_data['metadata']['title'],
                 'doc_id' : event_data['doc_id'],
-                # 'time' : datetime.datetime.fromtimestamp(event.time).strftime('%d.%m.%Y %H:%M'),
-                'time' : pretty_date(datetime.datetime.fromtimestamp(event.time)),
+                'time' : pretty_date(datetime.datetime.fromtimestamp(
+                    event.time)),
                 'action' : event_map[event.event],
             }
             events.append(e)
         except Exception as exc:
-            # print(exc)
             pass # be graceful
 
     # following
@@ -132,11 +158,16 @@ def home(id):
             Following.user_id==session['user'].id, 
             Following.following_user_id==user.id)).first())
 
-    return render_template('home.html', user=user, events=events, following=following)
+    return render_template('home.html', 
+        user=user, events=events, following=following)
 
 @app.route('/add', methods=['POST'])
 @login_required
 def add():
+    """
+    Add a book by isbn. Since this uses only the Open Library API at the
+    moment, expect missing books.
+    """
     try:
         isbn = request.form['isbn']
     except KeyError:
@@ -155,10 +186,12 @@ def add():
     # see if user already got this books stored
     conn = pyelasticsearch.ElasticSearch('http://localhost:9200/')
     results = conn.search("%s AND user_id:%s" % (isbn, user.id))
+
     if len(results['hits']['hits']) > 0:
         metadata = results['hits']['hits'][0]['_source']['metadata']
         doc_id = results['hits']['hits'][0]['_source']['_id']
-        return jsonify(key=apikey, status='200', isbn=isbn, message='OK', metadata=metadata, doc_id=doc_id)
+        return jsonify(key=apikey, status='200', 
+            isbn=isbn, message='OK', metadata=metadata, doc_id=doc_id)
 
     # if not found, store it in CouchDB
     store = get_store()
@@ -172,7 +205,8 @@ def add():
     # add to social stream
     event = Event(user_id=user.id, event='book added', time=time.time(),
         data=json.dumps({
-            "verbose" : "%s added %s to their collection" % (user.username, metadata['title']),
+            "verbose" : "%s added %s to their collection" % (
+                user.username, metadata['title']),
             "metadata" : metadata,
             "doc_id" : doc_id,
         }))
@@ -185,6 +219,9 @@ def add():
 @app.route('/follow/<id>')
 @login_required
 def follow(id):
+    """
+    Follow a user.
+    """
     user = session['user']
     if user == None:
         abort(404)
@@ -210,6 +247,9 @@ def follow(id):
 @app.route('/unfollow/<id>')
 @login_required
 def unfollow(id):
+    """
+    Unfollow a user.
+    """
     user = session['user']
     if user == None:
         abort(404)
@@ -237,6 +277,9 @@ def unfollow(id):
 
 @app.route('/item/<id>')
 def item(id):
+    """
+    Display details for an item.
+    """
     store = get_store()
     try:
         doc = store[id]
@@ -250,26 +293,29 @@ def item(id):
 @app.route('/api/v1/books', methods=['PUT'])
 def api_books_put():
     """ 
-    add a new book by isbn
+    API. Add a new book by isbn. PUT is idempotent.
     """
     try:
         apikey = request.form['key']
         isbn = request.form['isbn']
     except KeyError:
-        response = jsonify(status='400', message='key and isbn parameters are required')
+        response = jsonify(status='400', 
+            message='key and isbn parameters are required')
         response.code = 400
         return response
 
     user = User.query.filter(User.apikey==apikey).first()
     if user == None:
-        response = jsonify(apikey=apikey, status='400', message='user not found')
+        response = jsonify(apikey=apikey, status='400', 
+            message='user not found')
         response.code = 400
         return response
 
     try:
         metadata = get_book(isbn)
     except KeyError:
-        response = jsonify(apikey=apikey, isbn=isbn, status='404', message='book with this ISBN not found')
+        response = jsonify(apikey=apikey, isbn=isbn, status='404', 
+            message='book with this ISBN not found')
         response.code = 404
         return response
 
@@ -279,7 +325,8 @@ def api_books_put():
     if len(results['hits']['hits']) > 0:
         metadata = results['hits']['hits'][0]['_source']['metadata']
         doc_id = results['hits']['hits'][0]['_source']['_id']
-        return jsonify(key=apikey, status='200', isbn=isbn, message='OK', metadata=metadata, doc_id=doc_id)
+        return jsonify(key=apikey, status='200', isbn=isbn, 
+            message='OK', metadata=metadata, doc_id=doc_id)
 
     # if not found, store it in CouchDB
     store = get_store()
@@ -293,7 +340,8 @@ def api_books_put():
     # add to social stream
     event = Event(user_id=user.id, event='book added', time=time.time(),
         data=json.dumps({
-            "verbose" : "%s added %s to their collection" % (user.username, metadata['title']),
+            "verbose" : "%s added %s to their collection" % (
+                user.username, metadata['title']),
             "metadata" : metadata,
             "doc_id" : doc_id,
         }))
@@ -302,25 +350,28 @@ def api_books_put():
 
     # get book info by isbn ...
     # return data gathered and stored
-    return jsonify(key=apikey, status='200', isbn=isbn, message='OK', metadata=metadata, doc_id=doc_id)
+    return jsonify(key=apikey, status='200', 
+        isbn=isbn, message='OK', metadata=metadata, doc_id=doc_id)
 
 
 @app.route('/api/v1/books', methods=['DELETE'])
 def api_books_delete():
     """ 
-    delete book by internal id (couchdb doc_id)
+    API. Delete book by internal id (couchdb doc_id that is).
     """
     try:
         apikey = request.args.get('key', None)
         doc_id = request.args.get('id', None) # doc id
     except KeyError:
-        response = jsonify(status='400', message='key and id parameters are required')
+        response = jsonify(status='400', 
+            message='key and id parameters are required')
         response.code = 400
         return response
 
     user = User.query.filter(User.apikey==apikey).first()
     if user == None:
-        response = jsonify(apikey=apikey, status='400', message='user not found')
+        response = jsonify(apikey=apikey, status='400', 
+            message='user not found')
         response.code = 400
         return response
 
@@ -335,7 +386,8 @@ def api_books_delete():
 
     # add to social stream
     event = Event(user_id=user.id, event='book deleted', time=time.time(),
-        data=json.dumps({"verbose" : "%s removed %s from their collection" % (user.username, metadata['title']) }))
+        data=json.dumps({"verbose" : "%s removed %s from their collection" % (
+            user.username, metadata['title']) }))
     db.session.add(event)
     db.session.commit()
 
@@ -345,6 +397,9 @@ def api_books_delete():
 
 @app.route('/api/v1/books', methods=['GET'])
 def api_books_get():
+    """
+    API. Get a short list of books.
+    """
     try:
         apikey = request.args.get('key', None)
     except KeyError:
@@ -354,7 +409,8 @@ def api_books_get():
 
     user = User.query.filter(User.apikey==apikey).first()
     if user == None:
-        response = jsonify(apikey=apikey, status='400', message='user not found')
+        response = jsonify(apikey=apikey, status='400', 
+            message='user not found')
         response.code = 400
         return response
 
@@ -373,5 +429,6 @@ def api_books_get():
             pass
         payload.append(item)
 
-    return jsonify(key=apikey, status='200', message='OK', items=payload, count=len(results['hits']['hits']))
+    return jsonify(key=apikey, status='200', message='OK', 
+        items=payload, count=len(results['hits']['hits']))
 

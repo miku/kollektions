@@ -13,6 +13,9 @@ db = SQLAlchemy(app)
 
 # database is used just for users and social streams
 class User(db.Model):
+    """
+    An application user profile with minimal information.
+    """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
@@ -29,6 +32,9 @@ class User(db.Model):
         return '<User %r>' % self.username
 
 class Event(db.Model):
+    """
+    An event to display in the user's newsfeed.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     event = db.Column(db.Unicode(1024))
@@ -45,6 +51,9 @@ class Event(db.Model):
         return '<Event %r>' % self.id
 
 class Following(db.Model):
+    """
+    Social network DNA, twitter style.
+    """
     user_id = db.Column(db.Integer, primary_key=True)
     following_user_id = db.Column(db.Integer, primary_key=True)
 
