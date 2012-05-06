@@ -13,7 +13,7 @@ def get_store():
     """
     couch = couchdb.Server(app.config['COUCHDB_URL'])
     try:
-        return couch[DB_NAME]
+        return couch[app.config['COUCHDB_NAME']]
     except couchdb.http.ResourceNotFound, not_found:
         return couch.create(app.config['COUCHDB_NAME'])
 
