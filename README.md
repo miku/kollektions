@@ -8,7 +8,7 @@ Arbeitstitel: kollektions.
 Live-Demo
 ---------
 
-Eine Live-Demo steht unter
+Eine Live-Demo steht (eventuell) unter
 
 	http://139.18.19.118:5000/
 
