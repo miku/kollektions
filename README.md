@@ -18,7 +18,7 @@ zur Verfügung.
 Installation
 ------------
 
-siehe INSTALL.md
+siehe [INSTALL.md](https://raw.github.com/miku/kollektions/master/INSTALL.md)
 
 
 Konzept
