@@ -5,6 +5,16 @@ Einsendung für http://www.coding-contest.de/ 05/2012.
 
 Arbeitstitel: kollektions.
 
+Live-Demo
+---------
+
+Eine Live-Demo steht unter
+
+	http://139.18.19.118:5000/
+
+zur Verfügung.
+
+
 Installation
 ------------
 
