@@ -26,7 +26,7 @@
 					{{ form.login.error }}
 				{% endif %}
 
-				{{ form.login(size=20) }}
+				{{ form.login(size=20, autocapitalize="off") }}
 
 				{{ form.password.label }}
 
@@ -37,7 +37,7 @@
 					{{ form.password.error }}
 				{% endif %}
 
-				{{ form.password(size=20) }}
+				{{ form.password(size=20, autocapitalize="off") }}
 
 				<br>
 				<button type="submit" class="btn">Login</button>

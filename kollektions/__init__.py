@@ -3,6 +3,7 @@
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
+import uuid
 
 app = Flask(__name__)
 
@@ -16,11 +17,13 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
+    apikey = db.Column(db.String(36))
     
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
         self.password = password
+        self.apikey = str(uuid.uuid4())
 
     def __repr__(self):
         return '<User %r>' % self.username

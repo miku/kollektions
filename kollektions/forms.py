@@ -66,4 +66,5 @@ class SignupForm(Form):
         UniqueUsername(message='this username is taken, sorry'),
         Length(max=80)])
     password = PasswordField('Password', validators=[Required(),
-        Length(min=6, max=120)])
+        # TODO change 1 to 6+
+        Length(min=1, max=120)])

@@ -24,6 +24,11 @@
 		<div class="content index-left">
 			<h3>{{ user.username|truncate(24, killwords=True) }}</h3>
 			<p>{{ user.email|truncate(30, killwords=True) }}</p>
+			<p>Your API key<br>
+				<input type="text" value="{{ user.apikey }}"></input>
+			</p>
+			<p>To add a book via curl try:</p>
+			<pre>curl -XPUT {{ url_for('api_books_put', _external=True) }} -d 'key={{ user.apikey }}&isbn=0201657880'</pre>
 		</div>
 		<div class="content">
 		</div>

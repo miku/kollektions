@@ -25,7 +25,7 @@
 					{% endfor %}
 					{{ form.email.error }}
 				{% endif %}
-				{{ form.email(size=20) }}
+				{{ form.email(size=20, autocapitalize="off") }}
 
 				{{ form.username.label }}
 				{% if form.username.errors %}
@@ -34,7 +34,7 @@
 					{% endfor %}
 					{{ form.username.error }}
 				{% endif %}
-				{{ form.username(size=20) }}
+				{{ form.username(size=20, autocapitalize="off") }}
 
 				{{ form.password.label }}
 				{% if form.password.errors %}
@@ -43,7 +43,7 @@
 					{% endfor %}
 					{{ form.password.error }}
 				{% endif %}
-				{{ form.password(size=20) }}
+				{{ form.password(size=20, autocapitalize="off") }}
 
 				<br>
 				<button type="submit" class="btn">Create Account and Login</button>
