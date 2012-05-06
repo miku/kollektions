@@ -184,7 +184,7 @@ def add():
         return redirect(url_for('home', id=user.id))
 
     # see if user already got this books stored
-    conn = pyelasticsearch.ElasticSearch('http://localhost:9200/')
+    conn = pyelasticsearch.ElasticSearch(app.config['ELASTICSEARCH_URL'])
     results = conn.search("%s AND user_id:%s" % (isbn, user.id))
 
     if len(results['hits']['hits']) > 0:
@@ -320,7 +320,7 @@ def api_books_put():
         return response
 
     # see if user already got this books stored
-    conn = pyelasticsearch.ElasticSearch('http://localhost:9200/')
+    conn = pyelasticsearch.ElasticSearch(app.config['ELASTICSEARCH_URL'])
     results = conn.search("%s AND user_id:%s" % (isbn, user.id))
     if len(results['hits']['hits']) > 0:
         metadata = results['hits']['hits'][0]['_source']['metadata']
@@ -414,7 +414,7 @@ def api_books_get():
         response.code = 400
         return response
 
-    conn = pyelasticsearch.ElasticSearch('http://localhost:9200/')
+    conn = pyelasticsearch.ElasticSearch(app.config['ELASTICSEARCH_URL'])
     results = conn.search("user_id:%s" % user.id)
 
     payload = []

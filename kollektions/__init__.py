@@ -8,7 +8,7 @@ import uuid
 app = Flask(__name__)
 
 # setup db
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/kollektions.db'
 db = SQLAlchemy(app)
 
 # database is used just for users and social streams

@@ -29,7 +29,7 @@
 # Cluster name identifies your cluster for auto-discovery. If you're running
 # multiple clusters on the same network, make sure you're using unique names.
 #
-cluster.name: elasticsearch_ronit
+cluster.name: es_kollektions
 
 
 #################################### Node #####################################
@@ -141,7 +141,7 @@ index.number_of_replicas: 0
 # Path to directory where to store index data allocated for this node.
 #
 # path.data: /usr/local/var/elasticsearch/
-path.data: /Volumes/Data/elasticsearch/data/
+path.data: /tmp/kollektions/es/data/
 #
 # Can optionally include more than one location, causing data to be striped across
 # the locations (à la RAID 0) on a file level, favouring locations with most free
@@ -156,7 +156,7 @@ path.data: /Volumes/Data/elasticsearch/data/
 # Path to log files:
 #
 # path.logs: /usr/local/var/log/elasticsearch/
-path.logs: /Volumes/Data/elasticsearch/log/
+path.logs: /tmp/kollektions/es/log/
 
 # Path to where plugins are installed:
 #
