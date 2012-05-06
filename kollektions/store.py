@@ -2,11 +2,11 @@
 # coding: utf-8
 
 import couchdb
-import pyes
+import pyelasticsearch
 
 DB_URL  = 'http://0.0.0.0:5984/'
 DB_NAME = 'kollektions'
-ES_URL  = '127.0.0.1:9200'
+ES_URL  = 'http://127.0.0.1:9200'
 
 def get_store():
     """
@@ -20,40 +20,75 @@ def get_store():
     except couchdb.http.ResourceNotFound, not_found:
         return couch.create(DB_NAME)
 
-def get_user_by_email(email):
-    """
-    Return a user (dict) or none, if the user doesn't exist.
-    """
-    user, conn = None, pyes.ES(ES_URL)
+# def get_user_by_email(email):
+#     """
+#     Return a user (dict) or none, if the user doesn't exist.
+#     """
+#     # user, conn = None, pyes.ES(ES_URL)
+#     user, conn = None, pyelasticsearch.ElasticSearch(ES_URL)
 
-    q = pyes.query.TermQuery('email', email)
-    resultset = conn.search(query=q, indices='kollektions')
-    print(resultset)
-    if len(resultset['hits']['hits']) == 1:
-        user = resultset['hits']['hits'][0]['_source']
+#     # q = pyes.query.TermQuery('email', email)
+#     query = {
+#         "constant_score" : {
+#             "filter" : {
+#                 "term" : { "email" : email }
+#             }
+#         }
+#     }
+    
+#     results = conn.search(query, indexes=['kollektions'])
+#     # resultset = conn.search(query=q, indices='kollektions')
+#     print(results)
+#     if len(results['hits']['hits']) == 1:
+#         user = results['hits']['hits'][0]['_source']
 
-    return user
+#     return user
 
-def get_user_by_username(username):
-    """
-    Return a user (dict) or none, if the user doesn't exist.
-    """
-    user, conn = None, pyes.ES(ES_URL)
+# def get_user_by_username(username):
+#     """
+#     Return a user (dict) or none, if the user doesn't exist.
+#     """
+#     # user, conn = None, pyes.ES(ES_URL)
+#     user, conn = None, pyelasticsearch.ElasticSearch(ES_URL)
 
-    q = pyes.query.TermQuery('username', username)
-    resultset = conn.search(query=q, indices='kollektions')
-    if len(resultset['hits']['hits']) == 1:
-        user = resultset['hits']['hits'][0]['_source']
+#     # q = pyes.query.TermQuery('username', username)
+#     # query = {
+#     #     "query" : {
+#     #         "constant_score" : {
+#     #             "filter" : {
+#     #                 "term" : { "username" : username }
+#     #             }
+#     #         }        
+#     #     }
+#     # }
 
-    return user
+#     query = {
+#         "constant_score": {
+#             "filter": {
+#                 "term": {
+#                     "username": "asdx"
+#                 }
+#             }
+#         }
+#     }
 
-def get_user_by_username_or_email(username_or_email):
-    """
-    Fuzzy lookup, used for 'login with your username *or* email' login page.
-    """
-    print(get_user_by_username(username_or_email))
-    print(get_user_by_email(username_or_email))
-    return (
-        get_user_by_username(username_or_email) or 
-        get_user_by_email(username_or_email)
-    )
+#     # resultset = conn.search(query=q, indices='kollektions')
+#     results = conn.search(query, indexes=['kollektions'])
+
+#     print(results)
+    
+#     if len(results['hits']['hits']) == 1:
+#         user = results['hits']['hits'][0]['_source']
+
+#     return user
+
+# def get_user_by_username_or_email(username_or_email):
+#     """
+#     Fuzzy lookup, used for 'login with your username *or* email' login page.
+#     """
+#     print(get_user_by_username(username_or_email))
+#     print(get_user_by_email(username_or_email))
+#     return (
+#         get_user_by_username(username_or_email) or 
+#         get_user_by_email(username_or_email)
+#     )

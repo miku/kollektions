@@ -2,7 +2,6 @@
 # coding: utf-8
 
 import argparse
-import pyes
 import sys
 
 if __name__ == '__main__':
@@ -11,8 +10,14 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--server', metavar='SERVER', type=str,
         default='development', help='server setup, one of [development, gevent]')
     parser.add_argument('--ping', action='store_true', help='ping couchdb')
+    parser.add_argument('--create-db', action='store_true', help='create users db')
 
     args = parser.parse_args()
+
+    if args.create_db:
+        from kollektions import db
+        db.create_all()
+        sys.exit(0)
 
     # count the #docs in couchdb
     if args.ping:

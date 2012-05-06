@@ -1,32 +1,39 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from kollektions import app
+from kollektions import app, db, User
 from kollektions.forms import LoginForm, SignupForm
-from kollektions.store import get_store, get_user_by_username_or_email
-from kollektions.utils import calculate_sha1
-from flask import render_template, flash, redirect, url_for, session
-import pyes
+from flask import render_template, flash, redirect, url_for, session, abort
 from functools import wraps
+from sqlalchemy import or_
 
 def login_required(fn):
-	@wraps(fn)
-	def decorated_view(*args, **kwargs):
-	    if not 'user' in session:
-	        return redirect(url_for("login"))
-	    return fn(*args, **kwargs)
-	return decorated_view
+    @wraps(fn)
+    def decorated_view(*args, **kwargs):
+        if not 'user' in session:
+            return redirect(url_for("login"))
+        return fn(*args, **kwargs)
+    return decorated_view
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(403)
+def page_not_found(e):
+    return render_template('403.html'), 403
 
 @app.route('/')
 def index():
+    print(session)
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
-        session['user'] = get_user_by_username_or_email(form.data['login'])
-        return redirect(url_for("index"))    
+        session['user'] = User.query.filter(or_(User.username==form.data['login'], User.email==form.data['login'])).first()
+        return redirect(url_for("home", id=session['user'].id))    
     return render_template('login.html', form=form)
 
 @app.route('/logout')
@@ -38,26 +45,33 @@ def logout():
 def signup():
     form = SignupForm(csrf_enabled=False)
     if form.validate_on_submit():
-        
+
         __email = form.data['email']
         __username = form.data['username']
         __pw = form.data['password']
 
-        store = get_store()
-        doc_id, doc_rev = store.save({
-            'type' : 'user', 
-            'email' : __email,
-            'username' : __username,
-            'password' : calculate_sha1(__pw)})
+        # craete User
+        __user = User(username=__username, email=__email, password=__pw)
+        db.session.add(__user)
+        db.session.commit()
 
-        session['user'] = store[doc_id]
+        # save and get the id for retrieval
+        id = __user.id
+        # query the new user, since u is detached here
+        user = User.query.get(id)
 
-        return redirect(url_for("index"))    
+        # authenticated
+        session['user'] = user
+
+        return redirect(url_for("home", id=user.id))
     return render_template('signup.html', form=form)
 
-@app.route('/users/<doc_id>')
+@app.route('/users/<int:id>/')
 @login_required
-def home(doc_id):
-    store = get_store()
-    user = store[doc_id]
+def home(id):
+    user = User.query.get(id)
+    if not session['user'].id == user.id:
+        return abort(403)
+    if user == None:
+        return abort(404)
     return render_template('home.html', user=user)
