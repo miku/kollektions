@@ -34,7 +34,12 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', debug=True)
 
     elif args.server == 'gevent':
-        from gevent.wsgi import WSGIServer
+        try:
+            from gevent.wsgi import WSGIServer
+        except ImportError:
+            print('please install gevent / libevent')
+            sys.exit(1)
+
         from kollektions import app
 
         app.config['DEBUG'] = True
