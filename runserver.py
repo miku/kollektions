@@ -38,6 +38,10 @@ if __name__ == '__main__':
             from gevent.wsgi import WSGIServer
         except ImportError:
             print('please install gevent / libevent')
+            print('this is just a production server option, to run development server')
+            print('just use ')
+            print()
+            print('    python runserver.py')
             sys.exit(1)
 
         from kollektions import app
