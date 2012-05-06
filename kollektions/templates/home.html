@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
-{% block customhead %}        
+{% block customhead %}
+<style type="text/css">
+	.line {
+		border-top: solid thin #ABABAB;
+		margin: 10px 0 10px 0;
+	}
+</style>      
 {% endblock %}
 
 {% block main %}
@@ -11,27 +17,53 @@
 			<h3>Newsfeed</h3>
 		</div>
 		<div class="content">
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<ul>
+			{% for event in events %}
+				<li><a href="{{ url_for('home', id=event.user_id) }}">{{ event.username }}</a> {{ event.action }} 
+					<a href="{{ url_for('item', id=event.doc_id) }}">{{ event.title }}</a> {{ event.time }}</li>
+			{% endfor %}
+			</ul>
 		</div>
 	</div>
+
+	
 
 	<div class="span4">
 		<div class="content index-left">
 			<h3>{{ user.username|truncate(24, killwords=True) }}</h3>
 			<p>{{ user.email|truncate(30, killwords=True) }}</p>
-			<p>Your API key<br>
-				<input type="text" value="{{ user.apikey }}"></input>
-			</p>
-			<p>To add a book via curl try:</p>
-			<pre>curl -XPUT {{ url_for('api_books_put', _external=True) }} -d 'key={{ user.apikey }}&isbn=0201657880'</pre>
+
+			{% if session.user.id == user.id %}
+				<div class="line"></div>
+
+				<form method="post" action="{{ url_for('add') }}">
+					<input type="text" size="10" placeholder="isbn" name="isbn"/><br>
+					<button class="btn" type="submit">Add book by ISBN</button>
+				</form>				
+
+				<div class="line"></div>
+
+				<p>Your API key<br>
+					<input type="text" value="{{ user.apikey }}"></input>
+				</p>
+				<p>To add a book via curl try:</p>
+				<pre>curl -XPUT {{ url_for('api_books_put', _external=True) }} -d 'key={{ user.apikey }}&isbn=0201657880'</pre>
+
+			{% else %}
+
+				{% if following %}
+					<a class="btn" href="{{ url_for('unfollow', id=user.id) }}">Unfollow</a>
+				{% else %}
+					<a class="btn" href="{{ url_for('follow', id=user.id) }}">Follow this user</a>
+				{% endif %}
+
+			{% endif %}
 		</div>
 		<div class="content">
 		</div>
 	</div>
+
+	
+
 </div>
 {% endblock %}

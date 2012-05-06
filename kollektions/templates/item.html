@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block customhead %}        
+{% endblock %}
+
+{% block main %}
+<div class="row">
+
+	<div class="span12">
+		<div class="content index-left">
+		</div>
+		<div class="content">
+			<h3>{{ doc.metadata.title }}</h3>
+			{% if doc.metadata.authors %}
+				<p>by {{ doc.metadata.authors.0.name }} </p>
+			{% endif %}
+			<p>Added by <a href="{{ url_for('home', id=user.id) }}">{{ user.username }}</a></p>
+			<img src="http://covers.openlibrary.org/b/olid/{{ doc.metadata.identifiers.openlibrary.0 }}-M.jpg"></img>
+		</div>
+		<div class="content">
+			<pre style="font-size:10px">{{ doc }}</pre>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

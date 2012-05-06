@@ -60,6 +60,11 @@
         padding: 0 8px 0 8px;
         color: white;
     }
+    .flashes {
+        margin: 0 0 4px 0;
+        list-style:none;
+        background: #FFF380;
+    }
 
     </style>
     {% block customhead %}        
@@ -75,7 +80,22 @@
                 <div class="span12">                
                     <div class="header">
                         {% block header %}
-                        <span class="appname"><a href="/">Kollektions</a></span>
+
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                            <ul class=flashes>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                            </ul>
+                            {% endif %}
+                        {% endwith %}
+
+                        {% if session.user %}
+                            <span class="appname"><a href="{{ url_for('home', id=session.user.id) }}">Kollektions</a></span>
+                        {% else %}
+                            <span class="appname"><a href="{{ url_for('index') }}">Kollektions</a></span>
+                        {% endif %}
                         <span class="login-signup">
                             {% if session.user %}
                                 <span class="username"><a href="{{ url_for('home', id=session.user.id) }}">{{ session.user.username|truncate(24, killwords=True) }}</a></span> | <span class="login"><a href="{{ url_for('logout') }}">Logout</a></span>
