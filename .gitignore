@@ -3,4 +3,4 @@ build/*
 dist/*
 *pyc
 *NOTES.md
-
+nohup.out
