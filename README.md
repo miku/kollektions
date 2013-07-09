@@ -11,6 +11,10 @@ Installation
 
 siehe [INSTALL.md](https://raw.github.com/miku/kollektions/master/INSTALL.md)
 
+Screenshot
+----------
+
+![http://i.imgur.com/PVUYoVO.jpg](http://i.imgur.com/PVUYoVO.jpg)
 
 Konzept
 -------
