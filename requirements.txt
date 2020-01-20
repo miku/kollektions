@@ -5,7 +5,7 @@ Flask-WTF==0.6
 Jinja2==2.6
 SQLAlchemy==0.7.7
 WTForms==1.0.1
-Werkzeug==0.8.3
+Werkzeug==0.15.3
 certifi==0.0.8
 chardet==1.0.1
 oauthlib==0.1.3
