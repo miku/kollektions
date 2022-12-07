@@ -6,7 +6,7 @@ Jinja2==2.11.3
 SQLAlchemy==0.7.7
 WTForms==1.0.1
 Werkzeug==0.15.3
-certifi==0.0.8
+certifi==2022.12.7
 chardet==1.0.1
 oauthlib==0.1.3
 pyasn1==0.1.3
